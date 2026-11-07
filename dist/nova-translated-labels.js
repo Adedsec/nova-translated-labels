@@ -1,5 +1,5 @@
 (() => {
-  const MARKED = /\u2063 \(([^)\u2063]*)\)\u2063/g;
+  const MARKED = /\u2063 \(([^\u2063]*)\)\u2063/g;
   const HAS_MARKER = '\u2063';
   const SUBTITLE_CONTEXTS = '[dusk="sidebar-menu"], th, label, h1, h2, h3, h4, [dusk="filter-menu"]';
   const UNTOUCHED = 'option, script, style, textarea';
