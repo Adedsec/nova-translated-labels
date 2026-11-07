@@ -1,0 +1,70 @@
+{
+    "name": "adedsec/nova-translated-labels",
+    "description": "Translate Laravel Nova menu groups, resources, fields, filters, actions and options from one lang file, and show each label's real database name in grey under it.",
+    "keywords": [
+        "laravel",
+        "nova",
+        "translation",
+        "localization",
+        "i18n",
+        "rtl",
+        "labels"
+    ],
+    "homepage": "https://github.com/Adedsec/nova-translated-labels",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Aref Maddah",
+            "email": "arefmaddah@gmail.com"
+        }
+    ],
+    "require": {
+        "php": "^8.2",
+        "illuminate/console": "^11.0|^12.0|^13.0",
+        "illuminate/database": "^11.0|^12.0|^13.0",
+        "illuminate/support": "^11.0|^12.0|^13.0",
+        "laravel/nova": "^5.0"
+    },
+    "require-dev": {
+        "larastan/larastan": "^3.0",
+        "laravel/pint": "^1.18",
+        "orchestra/testbench": "^9.0|^10.0|^11.0",
+        "pestphp/pest": "^3.0|^4.0|^5.0"
+    },
+    "repositories": [
+        {
+            "type": "composer",
+            "url": "https://nova.laravel.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Adedsec\\NovaTranslatedLabels\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Adedsec\\NovaTranslatedLabels\\Tests\\": "tests/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Adedsec\\NovaTranslatedLabels\\NovaTranslatedLabelsServiceProvider"
+            ]
+        }
+    },
+    "scripts": {
+        "test": "pest",
+        "lint": "pint",
+        "analyse": "phpstan analyse --memory-limit=1G"
+    },
+    "config": {
+        "sort-packages": true,
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
+        }
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true
+}
