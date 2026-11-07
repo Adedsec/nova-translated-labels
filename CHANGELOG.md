@@ -4,6 +4,7 @@ All notable changes to this package are documented here.
 
 ## Unreleased
 
+- Changed: `nova-translated-labels:missing --json` prints only the JSON, nested like the lang file with empty values to fill in (`{"resources": {"posts": {"label": ""}}}`), instead of lists followed by a count line. `Translator::missing()` now maps each lang key to its English text.
 - Fix: input placeholders, `title` and `aria-label` attributes no longer show the real name in brackets.
 - Fix: a subtitle that contains a closing bracket, such as `Weight (kg)` in `original` mode, is drawn instead of left inline.
 - Fix: `nova-translated-labels:missing` fails when a resource could not be walked, instead of passing with labels it never saw.

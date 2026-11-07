@@ -23,7 +23,7 @@ final class MissingTranslationsCommand extends Command
     protected $signature = 'nova-translated-labels:missing
         {--path= : Directory holding your Nova resources (defaults to app/Nova)}
         {--user= : ID of the user to walk the resources as, for fields that check the current user}
-        {--json : Print the missing labels as JSON, ready to paste into a lang file}';
+        {--json : Print only the missing labels, as JSON keyed like the lang file}';
 
     /** @var string */
     protected $description = 'List the Nova labels that have no translation for the current locale';
@@ -49,31 +49,70 @@ final class MissingTranslationsCommand extends Command
         }
 
         $missing = $translator->missing();
+        $count = array_sum(array_map(count(...), $missing));
+        $json = (bool) $this->option('json');
 
-        if ($this->option('json')) {
-            $this->line((string) json_encode($missing, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES));
+        if ($json) {
+            // Only the JSON goes to stdout, so it can be redirected into a file.
+            $this->line((string) json_encode($this->langShaped($missing), JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES));
         } else {
             $rows = [];
 
             foreach ($missing as $kind => $texts) {
-                foreach ($texts as $text) {
-                    $rows[] = [$kind, $text];
+                foreach ($texts as $key => $text) {
+                    $rows[] = [$kind, (string) $key === $text ? $text : $key.' = '.$text];
                 }
             }
 
             $this->table(['Kind', 'Label'], $rows);
+            $this->info($count.' labels have no translation.');
         }
 
         if ($failures !== []) {
-            $this->warn('Some resources could not be fully walked:');
-            $this->table(['Resource', 'Error'], $failures);
+            $report = $json ? $this->output->getErrorStyle() : $this->output;
+            $report->writeln('<comment>Some resources could not be fully walked:</comment>');
+            $report->table(['Resource', 'Error'], $failures);
         }
-
-        $count = array_sum(array_map(count(...), $missing));
-        $this->info($count.' labels have no translation.');
 
         // A resource that could not be walked may hide missing labels, so it fails the run too.
         return $count === 0 && $failures === [] ? self::SUCCESS : self::FAILURE;
+    }
+
+    /**
+     * Nest the missing labels the way the lang file does, with empty values: an English
+     * value would count as a translation and hide the label from the next run.
+     *
+     * @param  array<string, array<string, string>>  $missing
+     * @return array<string, array<string, mixed>>
+     */
+    private function langShaped(array $missing): array
+    {
+        $shaped = [];
+
+        foreach ($missing as $kind => $texts) {
+            $shaped[$kind] = $kind === 'resources'
+                ? $this->nestResources(array_keys($texts))
+                : array_fill_keys(array_keys($texts), '');
+        }
+
+        return $shaped;
+    }
+
+    /**
+     * @param  list<string>  $keys  like "posts.label"
+     * @return array<string, array<string, string>>
+     */
+    private function nestResources(array $keys): array
+    {
+        $nested = [];
+
+        foreach ($keys as $key) {
+            // A uriKey has no dots, so the last one ends it.
+            $dot = (int) strrpos($key, '.');
+            $nested[substr($key, 0, $dot)][substr($key, $dot + 1)] = '';
+        }
+
+        return $nested;
     }
 
     /**

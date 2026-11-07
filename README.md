@@ -112,8 +112,10 @@ Anything without a translation keeps its English text and still gets its grey re
 
 ```bash
 php artisan nova-translated-labels:missing          # table
-php artisan nova-translated-labels:missing --json   # paste-ready
+php artisan nova-translated-labels:missing --json   # keyed like the lang file
 ```
+
+`--json` prints only the JSON, nested like `nova-labels.php` with an empty value for each label to fill in, so you can redirect it into a file. An empty value still counts as missing, so a label you have not filled in yet stays on the list.
 
 The command walks every resource in `app/Nova` (change it with `--path`), including fields, actions, filters and options. It exits with a failure code while anything is missing, or when a resource could not be walked, so you can run it in CI. If some fields look at the current user, pass `--user=1` to walk the resources as that user.
 

@@ -8,7 +8,7 @@ use Illuminate\Contracts\Config\Repository as Config;
 
 final class Translator
 {
-    /** @var array<string, array<string, true>> */
+    /** @var array<string, array<string, string>> lang key => English text, per kind */
     private array $missing = [];
 
     public function __construct(private readonly Config $config) {}
@@ -31,7 +31,7 @@ final class Translator
 
         // Option labels carrying digits are almost always data (codes, years, sizes), not wording.
         if ($kind !== 'options' || preg_match('/\d/', $text) !== 1) {
-            $this->missing[$kind][$text] = true;
+            $this->missing[$kind][$text] = $text;
         }
 
         return $text;
@@ -48,7 +48,7 @@ final class Translator
             return $translated ?? $fallback;
         }
 
-        $this->missing['resources'][$uriKey.'.'.$key.' = '.$fallback] = true;
+        $this->missing['resources'][$uriKey.'.'.$key] = $fallback;
 
         return $fallback;
     }
@@ -106,14 +106,14 @@ final class Translator
     }
 
     /**
-     * @return array<string, list<string>>
+     * The labels looked up without a translation, keyed by kind, then by their key
+     * in the lang file ("posts.label" for a resource), with the English text.
+     *
+     * @return array<string, array<string, string>>
      */
     public function missing(): array
     {
-        return array_map(
-            static fn (array $texts): array => array_map(strval(...), array_keys($texts)),
-            $this->missing,
-        );
+        return $this->missing;
     }
 
     /**
