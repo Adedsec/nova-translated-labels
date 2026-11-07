@@ -2,6 +2,10 @@
 
 All notable changes to this package are documented here.
 
+## Unreleased
+
+- Fix: input placeholders, `title` and `aria-label` attributes no longer show the real name in brackets.
+
 ## v0.1.0 - 2026-11-07
 
 - Translate Nova menu groups, resources, fields, panels, filters, actions and Select/Badge/BooleanGroup options from `lang/{locale}/nova-labels.php`.

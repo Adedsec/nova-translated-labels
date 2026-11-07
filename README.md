@@ -132,7 +132,7 @@ The command walks every resource in `app/Nova` (change it with `--path`), includ
 
 ## How it works
 
-The resource trait hooks into Nova's field, action and group resolution and replaces each label with its translation. It then appends the real name between two invisible separator characters (U+2063). A small script that Nova loads on every page turns that marked text into the grey line in the sidebar, the index headers, the detail and form labels and the filter menu. Everywhere else (buttons, toasts, breadcrumbs, the browser tab title), the script removes the real name.
+The resource trait hooks into Nova's field, action and group resolution and replaces each label with its translation. It then appends the real name between two invisible separator characters (U+2063). A small script that Nova loads on every page turns that marked text into the grey line in the sidebar, the index headers, the detail and form labels and the filter menu. Everywhere else (buttons, toasts, breadcrumbs, input placeholders, tooltips, the browser tab title), the script removes the real name.
 
 A few things to know:
 

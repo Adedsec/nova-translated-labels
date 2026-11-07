@@ -3,6 +3,7 @@
   const HAS_MARKER = '\u2063';
   const SUBTITLE_CONTEXTS = '[dusk="sidebar-menu"], th, label, h1, h2, h3, h4, [dusk="filter-menu"]';
   const UNTOUCHED = 'option, script, style, textarea';
+  const ATTRIBUTES = ['placeholder', 'title', 'aria-label'];
   const SUBTITLE_CLASS = 'ntl-subtitle';
 
   const style = document.createElement('style');
@@ -56,12 +57,30 @@
     stackParent(parent);
   };
 
+  // Attributes cannot hold a styled line, so they only lose the real name.
+  const processAttributes = (element) => {
+    for (const name of ATTRIBUTES) {
+      const value = element.getAttribute(name);
+
+      if (value && value.includes(HAS_MARKER)) {
+        element.setAttribute(name, strip(value));
+      }
+    }
+  };
+
   const processTree = (root) => {
     if (root.nodeType === Node.TEXT_NODE) {
       processText(root);
 
       return;
     }
+
+    if (!(root instanceof Element)) {
+      return;
+    }
+
+    processAttributes(root);
+    root.querySelectorAll(ATTRIBUTES.map((name) => `[${name}]`).join(', ')).forEach(processAttributes);
 
     const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
 
@@ -80,6 +99,8 @@
     for (const mutation of mutations) {
       if (mutation.type === 'characterData') {
         processText(mutation.target);
+      } else if (mutation.type === 'attributes') {
+        processAttributes(mutation.target);
       } else {
         mutation.addedNodes.forEach(processTree);
       }
@@ -91,7 +112,7 @@
   const start = () => {
     processTree(document.body);
     cleanTitle();
-    observer.observe(document.body, { childList: true, subtree: true, characterData: true });
+    observer.observe(document.body, { childList: true, subtree: true, characterData: true, attributes: true, attributeFilter: ATTRIBUTES });
     new MutationObserver(cleanTitle).observe(document.head, { childList: true, subtree: true, characterData: true });
   };
 
