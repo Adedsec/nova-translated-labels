@@ -16,18 +16,39 @@
 
   const strip = (text) => text.replace(MARKED, '');
 
-  const subtitleAfter = (node) => {
-    const next = node.nextSibling;
+  // Each text node's subtitle, and the text the script last wrote into it.
+  const subtitles = new WeakMap();
+  const written = new WeakMap();
 
-    if (next instanceof HTMLElement && next.classList.contains(SUBTITLE_CLASS)) {
-      return next;
+  const subtitleAfter = (node) => {
+    const existing = subtitles.get(node);
+
+    if (existing && existing.isConnected) {
+      return existing;
     }
 
     const subtitle = document.createElement('span');
     subtitle.className = SUBTITLE_CLASS;
     node.after(subtitle);
+    subtitles.set(node, subtitle);
 
     return subtitle;
+  };
+
+  const removeSubtitle = (node) => {
+    const subtitle = subtitles.get(node);
+
+    if (!subtitle) {
+      return;
+    }
+
+    const parent = subtitle.parentElement;
+    subtitles.delete(node);
+    subtitle.remove();
+
+    if (parent && !parent.querySelector(`:scope > .${SUBTITLE_CLASS}`)) {
+      parent.classList.remove('ntl-stack');
+    }
   };
 
   const stackParent = (parent) => {
@@ -43,13 +64,21 @@
     const parent = node.parentElement;
 
     if (!text || !text.includes(HAS_MARKER) || !parent || parent.closest(UNTOUCHED)) {
+      // The script's own write comes back as a mutation too; any other text means Vue reused the node for a new label.
+      if (text !== written.get(node)) {
+        removeSubtitle(node);
+      }
+
       return;
     }
 
     const realNames = [...text.matchAll(MARKED)].map((match) => match[1]);
     node.nodeValue = strip(text);
+    written.set(node, node.nodeValue);
 
     if (realNames.length === 0 || !parent.closest(SUBTITLE_CONTEXTS)) {
+      removeSubtitle(node);
+
       return;
     }
 
@@ -102,6 +131,12 @@
       } else if (mutation.type === 'attributes') {
         processAttributes(mutation.target);
       } else {
+        mutation.removedNodes.forEach((node) => {
+          // A node that was only moved is connected again by the time this runs.
+          if (node.nodeType === Node.TEXT_NODE && !node.isConnected) {
+            removeSubtitle(node);
+          }
+        });
         mutation.addedNodes.forEach(processTree);
       }
     }

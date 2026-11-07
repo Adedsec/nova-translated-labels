@@ -86,6 +86,27 @@ test('updates the subtitle when the label text changes', async () => {
   assert.equal(label.querySelector('.ntl-subtitle').textContent, 'name');
 });
 
+test('removes the subtitle when a reused label gets text without a real name', async () => {
+  const document = await page(`<label>${mark('عنوان', 'title')}</label>`);
+  const label = document.querySelector('label');
+
+  label.firstChild.nodeValue = 'Word Count';
+  await settle();
+
+  assert.equal(label.textContent, 'Word Count');
+  assert.equal(label.querySelector('.ntl-subtitle'), null);
+});
+
+test('removes the subtitle when its label text is removed', async () => {
+  const document = await page(`<label>${mark('عنوان', 'title')}</label>`);
+  const label = document.querySelector('label');
+
+  label.firstChild.remove();
+  await settle();
+
+  assert.equal(label.querySelector('.ntl-subtitle'), null);
+});
+
 test('removes the real name from the browser tab title', async () => {
   const document = await page('', mark('مقاله‌ها', 'posts'));
 
