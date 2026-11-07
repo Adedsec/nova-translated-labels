@@ -2,7 +2,7 @@
 
 Translate your whole [Laravel Nova](https://nova.laravel.com) admin panel from one lang file (menu groups, resources, fields, panels, filters, actions and option labels) and show each label's **real database name in small grey text under it**.
 
-![Nova Translated Labels](docs/screenshot.png)
+![Nova Translated Labels](https://raw.githubusercontent.com/Adedsec/nova-translated-labels/main/docs/screenshot.png)
 
 Admins read the panel in their own language and still know which table and column they are looking at, so they can find it in Metabase, a SQL client or the code.
 
