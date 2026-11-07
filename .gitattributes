@@ -6,3 +6,4 @@
 /phpstan.neon.dist  export-ignore
 /pint.json          export-ignore
 /composer.local.json export-ignore
+/package.json       export-ignore

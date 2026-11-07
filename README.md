@@ -153,6 +153,13 @@ composer test
 composer analyse
 ```
 
+The script in `dist/` has its own tests, which run in Node 22 with jsdom:
+
+```bash
+npm install
+npm test
+```
+
 ## Contributing
 
 Issues and pull requests are welcome. Please add a test for any behaviour you change.
