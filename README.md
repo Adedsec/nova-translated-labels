@@ -115,7 +115,7 @@ php artisan nova-translated-labels:missing          # table
 php artisan nova-translated-labels:missing --json   # paste-ready
 ```
 
-The command walks every resource in `app/Nova` (change it with `--path`), including fields, actions, filters and options. It exits with a failure code while anything is missing, so you can run it in CI. If some fields look at the current user, pass `--user=1` to walk the resources as that user.
+The command walks every resource in `app/Nova` (change it with `--path`), including fields, actions, filters and options. It exits with a failure code while anything is missing, or when a resource could not be walked, so you can run it in CI. If some fields look at the current user, pass `--user=1` to walk the resources as that user.
 
 ## Configuration
 

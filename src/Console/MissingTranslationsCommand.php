@@ -72,7 +72,8 @@ final class MissingTranslationsCommand extends Command
         $count = array_sum(array_map(count(...), $missing));
         $this->info($count.' labels have no translation.');
 
-        return $count === 0 ? self::SUCCESS : self::FAILURE;
+        // A resource that could not be walked may hide missing labels, so it fails the run too.
+        return $count === 0 && $failures === [] ? self::SUCCESS : self::FAILURE;
     }
 
     /**
