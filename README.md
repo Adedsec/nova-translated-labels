@@ -125,7 +125,7 @@ The command walks every resource in `app/Nova` (change it with `--path`), includ
 
 | Key | Default | What it does |
 | --- | --- | --- |
-| `file` | `nova-labels` | Lang file name: `lang/{locale}/{file}.php` |
+| `file` | `nova-labels` | Lang file name: `lang/{locale}/{file}.php`. The lang publish tag uses this name, so set it before publishing. |
 | `subtitles.groups` | `original` | What to show in grey under menu groups: `original`, `none` |
 | `subtitles.resources` / `fields` / `options` | `database` | What to show in grey: `database` (table, column, foreign key or stored value), `original` (the English label from your code), `both`, or `none` |
 | `translated_pattern` | any non-Latin letter | Labels matching it count as already translated. Set it to `null` when your admin language uses the Latin script. |

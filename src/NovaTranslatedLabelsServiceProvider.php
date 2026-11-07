@@ -26,8 +26,10 @@ final class NovaTranslatedLabelsServiceProvider extends ServiceProvider
                 __DIR__.'/../config/nova-translated-labels.php' => config_path('nova-translated-labels.php'),
             ], 'nova-translated-labels-config');
 
+            $file = config('nova-translated-labels.file', 'nova-labels');
+
             $this->publishes([
-                __DIR__.'/../stubs/nova-labels.php' => lang_path($this->app->getLocale().'/nova-labels.php'),
+                __DIR__.'/../stubs/nova-labels.php' => lang_path($this->app->getLocale().'/'.(is_string($file) ? $file : 'nova-labels').'.php'),
             ], 'nova-translated-labels-lang');
 
             $this->commands([MissingTranslationsCommand::class]);

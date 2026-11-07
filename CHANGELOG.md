@@ -10,6 +10,7 @@ All notable changes to this package are documented here.
 - Fix: `nova-translated-labels:missing` fails when a resource could not be walked, instead of passing with labels it never saw.
 - Fix: a panel is translated once, not once per field. With `translated_pattern` set to `null`, its translated name was looked up again and reported as missing.
 - Fix: a grey line no longer stays behind when Nova reuses a label for text without a real name, such as a computed field's column after switching resources.
+- Fix: the `nova-translated-labels-lang` publish tag names the file after the `file` config option instead of always `nova-labels.php`.
 
 ## v0.1.0 - 2026-11-07
 
