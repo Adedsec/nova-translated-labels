@@ -164,7 +164,7 @@ npm test
 
 ## Contributing
 
-Issues and pull requests are welcome. Please add a test for any behaviour you change.
+Issues and pull requests are welcome. Please add a test for any behaviour you change. CI cannot install Nova for pull requests from forks, so only the script tests run there; run the PHP tests locally before you open one.
 
 ## License
 
