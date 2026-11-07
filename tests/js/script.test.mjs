@@ -97,6 +97,33 @@ test('removes the subtitle when a reused label gets text without a real name', a
   assert.equal(label.querySelector('.ntl-subtitle'), null);
 });
 
+test('removes the subtitle when a reused label gets the same text without a real name', async () => {
+  const document = await page(`<table><tr><th>${mark('Name', 'name')}</th></tr></table>`);
+  const header = document.querySelector('th');
+
+  header.firstChild.nodeValue = 'Name';
+  await settle();
+
+  assert.equal(header.textContent, 'Name');
+  assert.equal(header.querySelector('.ntl-subtitle'), null);
+});
+
+test('keeps the subtitle of a label added after load, then drops it on a same-text rewrite', async () => {
+  const document = await page('<table><tr><th></th></tr></table>');
+  const header = document.querySelector('th');
+
+  header.append(document.createTextNode(mark('Name', 'name')));
+  await settle();
+
+  assert.equal(header.firstChild.nodeValue, 'Name');
+  assert.equal(header.querySelector('.ntl-subtitle').textContent, 'name');
+
+  header.firstChild.nodeValue = 'Name';
+  await settle();
+
+  assert.equal(header.querySelector('.ntl-subtitle'), null);
+});
+
 test('removes the subtitle when its label text is removed', async () => {
   const document = await page(`<label>${mark('عنوان', 'title')}</label>`);
   const label = document.querySelector('label');

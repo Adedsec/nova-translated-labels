@@ -16,9 +16,11 @@
 
   const strip = (text) => text.replace(MARKED, '');
 
-  // Each text node's subtitle, and the text the script last wrote into it.
+  // Each text node's subtitle, and how many of the script's own writes to it the observer has yet to report.
+  // Counting writes, not comparing text, tells them apart from Vue rewriting a label with the same text.
   const subtitles = new WeakMap();
-  const written = new WeakMap();
+  const pendingWrites = new WeakMap();
+  let observing = false;
 
   const subtitleAfter = (node) => {
     const existing = subtitles.get(node);
@@ -64,17 +66,18 @@
     const parent = node.parentElement;
 
     if (!text || !text.includes(HAS_MARKER) || !parent || parent.closest(UNTOUCHED)) {
-      // The script's own write comes back as a mutation too; any other text means Vue reused the node for a new label.
-      if (text !== written.get(node)) {
-        removeSubtitle(node);
-      }
+      removeSubtitle(node);
 
       return;
     }
 
     const realNames = [...text.matchAll(MARKED)].map((match) => match[1]);
+
+    if (observing) {
+      pendingWrites.set(node, (pendingWrites.get(node) ?? 0) + 1);
+    }
+
     node.nodeValue = strip(text);
-    written.set(node, node.nodeValue);
 
     if (realNames.length === 0 || !parent.closest(SUBTITLE_CONTEXTS)) {
       removeSubtitle(node);
@@ -127,7 +130,13 @@
   const observer = new MutationObserver((mutations) => {
     for (const mutation of mutations) {
       if (mutation.type === 'characterData') {
-        processText(mutation.target);
+        const pending = pendingWrites.get(mutation.target) ?? 0;
+
+        if (pending > 0) {
+          pendingWrites.set(mutation.target, pending - 1);
+        } else {
+          processText(mutation.target);
+        }
       } else if (mutation.type === 'attributes') {
         processAttributes(mutation.target);
       } else {
@@ -148,6 +157,7 @@
     processTree(document.body);
     cleanTitle();
     observer.observe(document.body, { childList: true, subtree: true, characterData: true, attributes: true, attributeFilter: ATTRIBUTES });
+    observing = true;
     new MutationObserver(cleanTitle).observe(document.head, { childList: true, subtree: true, characterData: true });
   };
 
