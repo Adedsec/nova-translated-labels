@@ -140,9 +140,17 @@ A few things to know:
 
 - **Native dropdowns** (`<option>`) cannot hold styled text, so their options show the value inline: `پیش‌نویس (draft)`.
 - **Action keys do not change.** Nova builds an action's URL key from its name, so the package pins the original key before renaming the action. Existing action URLs and export filenames keep working.
+- **The action log stores the translated name.** Nova writes an action's name into `action_events` when it runs, so entries are in the language that was active at the time.
 - **CSV exports** are untouched. Their headers come from your export code, not from field labels.
-- **Validation messages** use the translated label, with the real name inline.
+- **Validation messages** use the translated label. The API response also carries the marked real name, which the script removes on screen.
 - Relation fields are only resolved to a foreign key or table when Nova itself treats them as relations. A plain field that happens to share a name with a model method is never called.
+
+### Not translated yet
+
+- Lenses, including their fields. The `missing` command does not walk them either.
+- Metrics, cards and dashboards.
+- The names of individual tabs. A `Tab::group()` heading is translated like a panel, but the tabs inside it keep their names.
+- Section names you write yourself in `Nova::mainMenu()`. Wrap them in `__()` instead. Resources listed there with `MenuItem::resource()` are still translated.
 
 ## Testing
 
