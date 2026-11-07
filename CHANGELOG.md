@@ -2,6 +2,10 @@
 
 All notable changes to this package are documented here.
 
+## v0.2.1 - 2026-11-07
+
+- Fix: a grey line no longer stays behind when Nova rewrites a label with the same visible text but no real name, such as a computed `Name` column after switching resources. The script now counts its own writes instead of comparing text.
+
 ## v0.2.0 - 2026-11-07
 
 - Changed: `nova-translated-labels:missing --json` prints only the JSON, nested like the lang file with empty values to fill in (`{"resources": {"posts": {"label": ""}}}`), instead of lists followed by a count line. `Translator::missing()` now maps each lang key to its English text.
