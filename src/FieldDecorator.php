@@ -53,7 +53,9 @@ final class FieldDecorator
 
         $field->name = $this->translator->subtitle('fields', $label, $original, $withRealNames ? $this->realName($field, $model) : null);
 
-        if ($field->panel instanceof Panel) {
+        // Every field in a panel shares the same Panel, so translate it only for the first one.
+        if ($field->panel instanceof Panel && ! ($field->panel->meta[self::DECORATED] ?? false)) {
+            $field->panel->withMeta([self::DECORATED => true]);
             $field->panel->name = $this->translator->translate('panels', (string) $field->panel->name, $uriKey);
         }
 

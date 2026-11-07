@@ -8,14 +8,17 @@ use Adedsec\NovaTranslatedLabels\Tests\Fixtures\Models\Post as PostModel;
 use Adedsec\NovaTranslatedLabels\Tests\Fixtures\Nova\Actions\PublishPost;
 use Adedsec\NovaTranslatedLabels\Tests\Fixtures\Nova\Filters\StatusFilter;
 use Adedsec\NovaTranslatedLabels\Tests\Fixtures\Nova\Post;
+use Adedsec\NovaTranslatedLabels\Translator;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Lang;
 use Illuminate\Validation\ValidationException;
 use Laravel\Nova\Fields\BooleanGroup;
 use Laravel\Nova\Fields\Field;
 use Laravel\Nova\Fields\Select;
+use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Http\Requests\ActionRequest;
 use Laravel\Nova\Http\Requests\NovaRequest;
+use Laravel\Nova\Panel;
 
 /**
  * @return array<string, Field>
@@ -138,6 +141,17 @@ it('never relabels a list-shaped boolean group, whose labels are what gets saved
     resolve(FieldDecorator::class)->decorate([$field], null, null);
 
     expect(collect($field->jsonSerialize()['options'])->pluck('name')->all())->toBe(['Admin', 'Editor']);
+});
+
+it('translates a panel shared by several fields once, even when translations are in the Latin script', function (): void {
+    config(['nova-translated-labels.translated_pattern' => null]);
+    translations(['panels.Details' => 'Info', 'panels.Info' => 'Information']);
+    $panel = Panel::make('Details', [Text::make('Title'), Text::make('Body')]);
+
+    resolve(FieldDecorator::class)->decorate($panel->data, null, null);
+
+    expect($panel->name)->toBe('Info')
+        ->and(resolve(Translator::class)->missing())->not->toHaveKey('panels');
 });
 
 it('treats labels already in a non-Latin script as translated', function (): void {
