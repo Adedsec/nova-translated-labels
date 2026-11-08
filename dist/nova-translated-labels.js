@@ -8,8 +8,8 @@
 
   const style = document.createElement('style');
   style.textContent = `
-    .${SUBTITLE_CLASS} { display: block; unicode-bidi: isolate; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 11px; line-height: 1.3; font-weight: 400; letter-spacing: normal; text-transform: none; color: rgb(156 163 175); user-select: all; }
-    .dark .${SUBTITLE_CLASS} { color: rgb(107 114 128); }
+    .${SUBTITLE_CLASS} { display: block; unicode-bidi: isolate; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 11px; line-height: 1.3; font-weight: 400; letter-spacing: normal; text-transform: none; color: rgba(var(--colors-gray-400)); user-select: all; }
+    .dark .${SUBTITLE_CLASS} { color: rgba(var(--colors-gray-500)); }
     .ntl-stack { flex-direction: column !important; align-items: flex-start !important; justify-content: center !important; }
   `;
   document.head.appendChild(style);
