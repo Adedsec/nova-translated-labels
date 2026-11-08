@@ -2,6 +2,10 @@
 
 All notable changes to this package are documented here.
 
+## v0.2.3 - 2026-11-08
+
+- Changed: the grey subtitle takes its color from Nova's `--colors-gray-*` variables, so it follows the panel's palette. Override `.ntl-subtitle` to restyle it.
+
 ## v0.2.1 - 2026-11-07
 
 - Fix: a grey line no longer stays behind when Nova rewrites a label with the same visible text but no real name, such as a computed `Name` column after switching resources. The script now counts its own writes instead of comparing text.
