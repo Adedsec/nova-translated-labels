@@ -15,11 +15,18 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        php: ['8.2', '8.3', '8.4']
+        php: ['8.2', '8.3', '8.4', '8.5', '8.6']
         laravel: ['11.*', '12.*', '13.*']
+        # Each Laravel release supports a range of PHP versions; skip the rest.
         exclude:
           - php: '8.2'
             laravel: '13.*'
+          - php: '8.5'
+            laravel: '11.*'
+          - php: '8.6'
+            laravel: '11.*'
+          - php: '8.6'
+            laravel: '12.*'
 
     name: PHP ${{ matrix.php }} - Laravel ${{ matrix.laravel }}
 
