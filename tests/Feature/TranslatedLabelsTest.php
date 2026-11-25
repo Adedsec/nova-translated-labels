@@ -200,3 +200,48 @@ it('names the translated field in an action validation message', function (): vo
 
     expect($errors['reason'][0])->toContain('دلیل')->not->toContain('Reason');
 });
+
+it('reads the lang file once for many labels in one request', function (): void {
+    $lang = new class(app('translation.loader'), 'fa') extends Illuminate\Translation\Translator
+    {
+        public int $groupReads = 0;
+
+        public function get($key, array $replace = [], $locale = null, $fallback = true)
+        {
+            if ($key === 'nova-labels') {
+                $this->groupReads++;
+            }
+
+            return parent::get($key, $replace, $locale, $fallback);
+        }
+    };
+    $lang->addLines(['nova-labels.fields.Title' => 'عنوان', 'nova-labels.fields.Body' => 'متن'], 'fa');
+    Lang::swap($lang);
+    app()->forgetScopedInstances();
+
+    $translator = resolve(Translator::class);
+
+    foreach (range(1, 20) as $ignored) {
+        expect($translator->translate('fields', 'Title'))->toBe('عنوان')
+            ->and($translator->translate('fields', 'Body', 'posts'))->toBe('متن');
+    }
+
+    expect($lang->groupReads)->toBe(1);
+});
+
+it('follows the locale and fallback locale when they change during a request', function (): void {
+    Lang::addLines(['nova-labels.fields.Title' => 'Titre'], 'fr');
+    Lang::addLines(['nova-labels.fields.Title' => 'Titel'], 'de');
+    translations(['fields.Title' => 'عنوان']);
+
+    $translator = resolve(Translator::class);
+
+    expect($translator->translate('fields', 'Title'))->toBe('عنوان');
+
+    Lang::setLocale('fr');
+    expect($translator->translate('fields', 'Title'))->toBe('Titre');
+
+    Lang::setLocale('it');
+    Lang::setFallback('de');
+    expect($translator->translate('fields', 'Title'))->toBe('Titel');
+});

@@ -5,13 +5,26 @@ declare(strict_types=1);
 namespace Adedsec\NovaTranslatedLabels;
 
 use Illuminate\Contracts\Config\Repository as Config;
+use Illuminate\Contracts\Translation\Translator as Lang;
 
 final class Translator
 {
     /** @var array<string, array<string, string>> lang key => English text, per kind */
     private array $missing = [];
 
-    public function __construct(private readonly Config $config) {}
+    /**
+     * The lang file, resolved once per locale, fallback locale and file name. Laravel
+     * walks the whole file on every trans() call for a group, and a Nova page looks
+     * up hundreds of labels. The class is bound scoped, so this lives for one request.
+     *
+     * @var array<string, mixed>
+     */
+    private array $catalogues = [];
+
+    public function __construct(
+        private readonly Config $config,
+        private readonly Lang $lang,
+    ) {}
 
     /**
      * @param  'groups'|'fields'|'panels'|'filters'|'actions'|'options'  $kind
@@ -121,8 +134,7 @@ final class Translator
      */
     private function lookup(array $path): ?string
     {
-        $file = $this->config->get('nova-translated-labels.file', 'nova-labels');
-        $value = trans(is_string($file) ? $file : 'nova-labels');
+        $value = $this->catalogue();
 
         foreach ($path as $segment) {
             if (! is_array($value) || ! array_key_exists($segment, $value)) {
@@ -133,5 +145,15 @@ final class Translator
         }
 
         return is_string($value) && $value !== '' ? $value : null;
+    }
+
+    private function catalogue(): mixed
+    {
+        $file = $this->config->get('nova-translated-labels.file', 'nova-labels');
+        $file = is_string($file) ? $file : 'nova-labels';
+        $locale = $this->lang->getLocale();
+        $fallback = method_exists($this->lang, 'getFallback') ? (string) $this->lang->getFallback() : '';
+
+        return $this->catalogues[$locale."\0".$fallback."\0".$file] ??= $this->lang->get($file, [], $locale);
     }
 }
