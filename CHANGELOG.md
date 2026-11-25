@@ -2,6 +2,11 @@
 
 All notable changes to this package are documented here.
 
+## v0.2.4 - 2026-11-26
+
+- Changed: the lang file is read once per request for each locale, fallback locale and file name, instead of once per label. Laravel walks the whole file on every `trans()` call for a group, which slowed Nova pages with many labels. Lines added with `Lang::addLines()` after the first label of a request show from the next request.
+- Changed: tested on PHP 8.5 and 8.6.
+
 ## v0.2.3 - 2026-11-08
 
 - Changed: the grey subtitle takes its color from Nova's `--colors-gray-*` variables, so it follows the panel's palette. Override `.ntl-subtitle` to restyle it.
